@@ -29,22 +29,26 @@ from django.contrib.auth.models import User
 #         return instance
 
 
-class SnippetSerializer(serializers.ModelSerializer):
+class SnippetSerializer(serializers.HyperlinkedModelSerializer):
     owner = serializers.ReadOnlyField(source='owner.username')
     # This field is doing something quite interesting.
     # The source argument controls which attribute is used to populate a field,
     # and can point at any attribute on the serialized instance.
+    highlight = serializers.HyperlinkedIdentityField(view_name='snippet-highlight', format='html')
+    # Notice that we've also added a new 'highlight' field.
+    # This field is of the same type as the url field,
+    # except that it points to the 'snippet-highlight' url pattern,
+    # instead of the 'snippet-detail' url pattern.
     class Meta:
         model = Snippet
-        fields = ('id','owner', 'title', 'code', 'linenos', 'language', 'style')
+        fields = ('url', 'id', 'owner', 'highlight', 'title', 'code', 'linenos', 'language', 'style')
 
 
-
-class UserSerializer(serializers.ModelSerializer):
-    snippets = serializers.PrimaryKeyRelatedField(many=True, queryset=Snippet.objects.all())
+class UserSerializer(serializers.HyperlinkedModelSerializer):
+    snippets = serializers.HyperlinkedRelatedField(many=True, view_name='snippet-detail', read_only=True)
     # Because 'snippets' is a reverse relationship on the User model,
     # it will not be included by default when using the ModelSerializer class,
     # so we needed to add an explicit field for it.
     class Meta:
         model = User
-        fields = ('id', 'username', 'snippets')
+        fields = ('id', 'url', 'username', 'snippets')
