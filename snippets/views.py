@@ -39,7 +39,7 @@ from rest_framework import renderers
 # @api_view(['GET', 'PUT', 'DELETE'])
 # def snippet_detail(request, pk, format=None):
 #     """
-#     Retrieve, update or delete a code snippet.
+#     RetrieveC, update or delete a code snippet.
 #     """
 #     try:
 #         snippet = Snippet.objects.get(pk=pk)
